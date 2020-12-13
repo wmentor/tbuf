@@ -93,4 +93,9 @@ func TestBuf(t *testing.T) {
 	tPop(3, []string{"2"})
 	tPop(2, nil)
 
+	b.Reset()
+
+	if b.IsFull() || !b.IsEmpty() {
+		t.Fatal("Reset failed")
+	}
 }

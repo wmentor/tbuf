@@ -86,6 +86,11 @@ func (b *Buffer) PopN(num int) {
 	}
 }
 
+func (b *Buffer) Reset() {
+	b.used = 0
+	b.start = 0
+}
+
 func (b *Buffer) Pop() {
 	b.PopN(1)
 }
