@@ -2,11 +2,21 @@ package tbuf
 
 import (
 	"errors"
+	"strings"
+	"sync"
 )
 
 var (
 	ErrInvalidBufferSize error = errors.New("invalid buffer size")
 	ErrInvalidIndexRange error = errors.New("invalid index")
+)
+
+var (
+	pool = sync.Pool{
+		New: func() any {
+			return &strings.Builder{}
+		},
+	}
 )
 
 type Buffer struct {
@@ -93,4 +103,20 @@ func (b *Buffer) Reset() {
 
 func (b *Buffer) Pop() {
 	b.PopN(1)
+}
+
+func (b *Buffer) String() string {
+	buf := pool.Get().(*strings.Builder)
+	defer pool.Put(buf)
+
+	buf.Reset()
+
+	for i := 0; i < b.Len(); i++ {
+		if i != 0 {
+			buf.WriteRune(' ')
+		}
+		buf.WriteString(b.data[(b.start+i)%b.size])
+	}
+
+	return buf.String()
 }

@@ -2,6 +2,8 @@ package tbuf
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestBuf(t *testing.T) {
@@ -42,8 +44,10 @@ func TestBuf(t *testing.T) {
 	tPush("4", []string{"1", "2", "3", "4"})
 	tPush("5", []string{"1", "2", "3", "4", "5"})
 	tPush("6", []string{"2", "3", "4", "5", "6"})
+	require.Equal(t, "2 3 4 5 6", b.String())
 	tPush("7", []string{"3", "4", "5", "6", "7"})
 	tPush("8", []string{"4", "5", "6", "7", "8"})
+	require.Equal(t, "4 5 6 7 8", b.String())
 
 	v, e := b.Get(7)
 	if v != "" || e != ErrInvalidIndexRange {
@@ -81,6 +85,7 @@ func TestBuf(t *testing.T) {
 	tShift(0, []string{"4", "5", "6", "7", "8"})
 	b.Shift()
 	tShift(1, []string{"6", "7", "8"})
+	require.Equal(t, "6 7 8", b.String())
 	tShift(2, []string{"8"})
 	tShift(10, nil)
 	tPush("1", []string{"1"})

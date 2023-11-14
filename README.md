@@ -4,8 +4,8 @@ Simple text buffer with fixed max size optimized for deletion from begin/end and
 
 ## Sumary
 
-* Go version >= 1.10
-* No external dependencies
+* Go version >= 1.20
+* Require *github.com/stretchr/testify*
 
 ## Install
 
@@ -63,6 +63,8 @@ func main() {
     fmt.Println(val, err)
   }
 
+  fmt.Println(buf.String())
+
   buf.Reset() // remove all items
   fmt.Println(buf.IsEmpty()) // true
 }
@@ -88,5 +90,6 @@ buffer after adding two items:
 remove 1 from start and 2 from end
 3 <nil>
 4 <nil>
+3 4
 true
 ```
