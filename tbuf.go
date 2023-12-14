@@ -3,7 +3,6 @@ package tbuf
 import (
 	"errors"
 	"strings"
-	"sync"
 )
 
 var (
@@ -11,19 +10,12 @@ var (
 	ErrInvalidIndexRange error = errors.New("invalid index")
 )
 
-var (
-	pool = sync.Pool{
-		New: func() any {
-			return &strings.Builder{}
-		},
-	}
-)
-
 type Buffer struct {
 	data  []string
 	start int
 	used  int
 	size  int
+	buf   *strings.Builder
 }
 
 func New(maxSize int) (*Buffer, error) {
@@ -33,6 +25,7 @@ func New(maxSize int) (*Buffer, error) {
 			start: 0,
 			used:  0,
 			size:  maxSize,
+			buf:   &strings.Builder{},
 		}, nil
 	}
 
@@ -106,17 +99,48 @@ func (b *Buffer) Pop() {
 }
 
 func (b *Buffer) String() string {
-	buf := pool.Get().(*strings.Builder)
-	defer pool.Put(buf)
+	b.buf.Reset()
 
-	buf.Reset()
-
-	for i := 0; i < b.Len(); i++ {
+	for i := 0; i < b.used; i++ {
 		if i != 0 {
-			buf.WriteRune(' ')
+			b.buf.WriteRune(' ')
 		}
-		buf.WriteString(b.data[(b.start+i)%b.size])
+		b.buf.WriteString(b.data[(b.start+i)%b.size])
 	}
 
-	return buf.String()
+	return b.buf.String()
+}
+
+func (b *Buffer) Join(sep string) string {
+	b.buf.Reset()
+
+	for i := 0; i < b.used; i++ {
+		if i != 0 {
+			b.buf.WriteString(sep)
+		}
+		b.buf.WriteString(b.data[(b.start+i)%b.size])
+	}
+
+	return b.buf.String()
+}
+
+func (b *Buffer) JoinFirst(limit int, sep string) string {
+	if limit < 1 || b.used < 1 {
+		return ""
+	}
+
+	if b.used < limit {
+		limit = b.used
+	}
+
+	b.buf.Reset()
+
+	for i := 0; i < limit; i++ {
+		if i > 0 {
+			b.buf.WriteString(sep)
+		}
+		b.buf.WriteString(b.data[(b.start+i)%b.size])
+	}
+
+	return b.buf.String()
 }

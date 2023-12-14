@@ -83,6 +83,11 @@ func TestBuf(t *testing.T) {
 	}
 
 	tShift(0, []string{"4", "5", "6", "7", "8"})
+	require.Equal(t, "4/!5/!6/!7/!8", b.JoinFirst(5, "/!"))
+	require.Equal(t, "4/!5/!6/!7/!8", b.JoinFirst(8, "/!"))
+	require.Equal(t, "4/!5/!6", b.JoinFirst(3, "/!"))
+	require.Equal(t, "4", b.JoinFirst(1, "/!"))
+	require.Equal(t, "", b.JoinFirst(0, "/!"))
 	b.Shift()
 	tShift(1, []string{"6", "7", "8"})
 	require.Equal(t, "6 7 8", b.String())
@@ -94,6 +99,7 @@ func TestBuf(t *testing.T) {
 	tPush("4", []string{"1", "2", "3", "4"})
 	tPush("5", []string{"1", "2", "3", "4", "5"})
 	tPush("6", []string{"2", "3", "4", "5", "6"})
+	require.Equal(t, "2-3-4-5-6", b.Join("-"))
 	b.Pop()
 	tPop(3, []string{"2"})
 	tPop(2, nil)

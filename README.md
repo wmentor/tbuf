@@ -53,6 +53,11 @@ func main() {
     fmt.Println(val, err)
   }
 
+  fmt.Println("join examples:")
+
+  fmt.Printf("%s\n", buf.Join("+"))
+  fmt.Printf("%s\n", buf.JoinFirst(3, "//"))
+
   buf.ShiftN(1)
   buf.PopN(2)
 
@@ -87,6 +92,9 @@ buffer after adding two items:
 4 <nil>
 11 <nil>
 12 <nil>
+join examples:
+2+3+4+11+12
+2//3//4
 remove 1 from start and 2 from end
 3 <nil>
 4 <nil>
